@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Interview Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="25" height="25" rx="7" fill="#0f766e"/>
+        <path d="M8 14.5h2.6l1.7-4.6 2.5 9 1.7-4.4H20" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h1>Live Interview Prototype</h1>
+        <p>AI leads the voice call. You answer. Transcript builds itself.</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="model-badge" id="model-name">…</span>
+      <span class="status" id="status-pill" data-state="idle"><i></i><span>Idle</span></span>
+      <span class="timer" id="timer" title="Call duration">00:00</span>
+    </div>
+  </header>
+
+  <div class="error" id="error-bar" hidden></div>
+
+  <main class="layout">
+    <aside class="controls" aria-label="Call setup">
+      <section class="card setup" aria-label="Setup and call">
+        <div class="step" id="step-focus">
+          <h2>Interview focus</h2>
+          <p class="hint">Step 1 — pick one before you press Start. The AI asks, you answer. Shortcuts: Alt+T start/stop, Alt+W wrap up.</p>
+          <div class="templates" id="template-list" role="radiogroup" aria-label="Interview template"></div>
+        </div>
+
+        <div class="step" id="step-call">
+          <h2>Call</h2>
+          <p class="hint">Step 2 — press Start talking. The AI speaks first.</p>
+          <p class="key-state" id="key-state">Checking .env…</p>
+          <div class="row">
+            <label class="field">Voice
+              <select id="voice-select">
+                <option>Kore</option><option>Puck</option><option>Charon</option>
+                <option>Fenrir</option><option>Aoede</option>
+              </select>
+            </label>
+          </div>
+          <button class="talk" id="btn-talk" aria-pressed="false">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="5.5" y="1.5" width="5" height="8" rx="2.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <span>Start talking</span>
+          </button>
+          <div class="meters">
+            <div class="meter"><span id="mic-fill"></span></div>
+            <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="speak"><i id="speak-dot"></i><span id="speak-label">Listening</span></div>
+          </div>
+          <div class="orb" id="orb" aria-hidden="true"><i></i></div>
+          <div class="btn-row">
+            <button class="secondary" id="btn-wrap" type="button" disabled>Wrap up</button>
+            <button class="secondary" id="btn-save" type="button" disabled>Save .txt</button>
+            <button class="ghost" id="btn-clear" type="button">Clear</button>
+          </div>
+        </div>
+
+        <div class="step" id="step-brief">
+          <h2>What the AI is told</h2>
+          <details open id="brief-details">
+            <summary>Brief for this call</summary>
+            <p class="opening" id="opening-line"></p>
+            <label class="field">System instruction (editable until you start)
+              <textarea id="system-text" rows="4" spellcheck="false"></textarea>
+            </label>
+            <h3>Expected answers <span class="progress" id="field-progress">0/0 collected</span></h3>
+            <ul class="fields" id="field-list"></ul>
+          </details>
+        </div>
+      </section>
+      <section class="card" id="diagnostics-card">
+        <h2>Diagnostics</h2>
+        <details id="diag-details">
+          <summary>Session log <span class="progress" id="log-count">0 events</span></summary>
+          <p class="hint">Every step lands here and in <code>logs/client.log</code> on the server. If a call drops, read the last lines first.</p>
+          <div class="log-panel" id="log-panel" aria-live="off" aria-label="Diagnostic log"></div>
+          <div class="btn-row">
+            <button class="secondary" id="btn-diag" type="button">Copy diagnostics</button>
+          </div>
+        </details>
+      </section>
+    </aside>
+
+    <section class="transcript" aria-label="Live transcript">
+      <div class="feed-head">
+        <h2>Live conversation</h2>
+        <span class="count" id="turn-count">0 turns</span>
+      </div>
+      <div class="feed" id="feed" role="log" aria-live="polite" aria-label="Conversation transcript">
+        <div class="empty" id="empty-state">
+          <p>No turns yet.</p>
+          <p class="empty-sub">Pick a focus on the left, press Start talking, and answer by voice. The AI speaks first.</p>
+        </div>
+      </div>
+      <div class="interim" id="interim" hidden>
+        <div id="interim-you-wrap" hidden><span class="who">You…</span><p id="interim-you"></p></div>
+        <div id="interim-ai-wrap" hidden><span class="who">AI…</span><p id="interim-ai"></p></div>
+      </div>
+      <p class="foot-hint">Tip: Chrome on localhost. Use headphones to avoid echo. Saving downloads a <code>.txt</code> and keeps a server copy in <code>transcripts/</code>.</p>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
